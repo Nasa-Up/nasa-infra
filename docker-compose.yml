@@ -1,0 +1,33 @@
+services:
+
+  backend:
+    build:
+      context: ../backend       
+      dockerfile: Dockerfile   
+    ports:
+      - "${BACKEND_PORT}:3001"       
+    environment:
+      - PORT=${BACKEND_PORT}
+      - NASA_API_KEY=${NASA_API_KEY}
+      - NASA_EPIC_BASE_URL=${NASA_EPIC_BASE_URL}
+      - NASA_EPIC_IMAGE_URL=${NASA_EPIC_IMAGE_URL}
+      - FRONTEND_URL=${FRONTEND_URL}
+    networks:
+      - nasa-network
+
+  frontend:
+    build:
+      context: ../frontend
+      dockerfile: Dockerfile
+      args:
+        - NEXT_PUBLIC_BACKEND_URL=http://localhost:3001
+    ports:
+      - "${FRONTEND_PORT}:3000"
+    depends_on:
+      - backend              
+    networks:
+      - nasa-network
+
+networks:
+  nasa-network:           
+    driver: bridge
